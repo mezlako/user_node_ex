@@ -1,3 +1,4 @@
+// Core modules and dependencies
 const express = require('express');
 const helmet = require('helmet');
 const xss = require('xss-clean');
@@ -14,8 +15,10 @@ const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 
+// Create an Express application
 const app = express();
 
+// Logger setup (skip in test environment)
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
