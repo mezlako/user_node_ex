@@ -1,0 +1,91 @@
+# GitHub Actions Workflow for Pull Requests
+# This workflow triggers on pull requests to dev, staging, and main/master branches
+# It performs: Lint Check → Format Check → Build
+
+name: Pull Request CI
+
+# Trigger: Run on pull requests to these branches
+on:
+  pull_request:
+    branches:
+      - dev
+      - staging
+      - main
+      - master
+
+# Environment variables
+env:
+  NODE_VERSION: '16.x'
+
+jobs:
+  # Job 1: Lint and Format Checks
+  lint-and-format:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Setup Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      # Install project dependencies
+      - name: Install dependencies
+        run: npm ci
+      
+      # Run ESLint to check code quality
+      - name: Run ESLint
+        run: npm run lint
+      
+      # Run Prettier to check code formatting
+      - name: Check code formatting with Prettier
+        run: npm run prettier:check
+
+  # Job 2: Build the Project
+  build:
+    name: Build Project
+    runs-on: ubuntu-latest
+    needs: lint-and-format  # Only run if lint-and-format job succeeds
+    
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Setup Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      # Install project dependencies
+      - name: Install dependencies
+        run: npm ci
+      
+      # Create .env file using GitHub Secrets
+      - name: Create .env file from secrets
+        run: |
+          echo "NODE_ENV=production" > .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" >> .env
+      
+      # Build the project (without Docker)
+      - name: Build the project
+        run: |
+          echo "Starting build process..."
+          npm run build --if-present
+          echo "Build completed successfully!"
+      
+      # Error handling: Notify if build fails
+      - name: Build failure notification
+        if: failure()
+        run: |
+          echo "Build failed! Please check the logs above for errors."
+          exit 1
