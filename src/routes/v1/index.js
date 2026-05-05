@@ -1,5 +1,6 @@
 const express = require('express');
 const authRoute = require('./auth.route');
+const bookmarkRoute = require('./bookmark.route');
 const userRoute = require('./user.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -10,6 +11,10 @@ const defaultRoutes = [
   {
     path: '/auth',
     route: authRoute,
+  },
+  {
+    path: '/bookmarks',
+    route: bookmarkRoute,
   },
   {
     path: '/users',
