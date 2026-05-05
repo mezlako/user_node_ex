@@ -1,5 +1,19 @@
 components:
   schemas:
+    Bookmark:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 64a2f3c1e4b0a1234567890a
+        url:
+          type: string
+          format: uri
+          example: https://example.com
+        title:
+          type: string
+          example: Example Site
+
     User:
       type: object
       properties:
@@ -48,6 +62,15 @@ components:
           type: string
 
   responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: '"url" must be a valid uri'
     DuplicateEmail:
       description: Email already taken
       content:
