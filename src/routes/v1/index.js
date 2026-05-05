@@ -24,6 +24,7 @@ const defaultRoutes = [
 
 const devRoutes = [
   // routes available only in development mode
+  //LF TODO: Add the routes for the development mode 05 May 2026
   {
     path: '/docs',
     route: docsRoute,
