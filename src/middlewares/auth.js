@@ -2,6 +2,7 @@ const passport = require('passport');
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const { roleRights } = require('../config/roles');
+const { userRateLimiter } = require('./rateLimiter');
 
 const verifyCallback = (req, resolve, reject, requiredRights) => async (err, user, info) => {
   if (err || info || !user) {
@@ -24,6 +25,12 @@ const auth = (...requiredRights) => async (req, res, next) => {
   return new Promise((resolve, reject) => {
     passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(req, res, next);
   })
+    .then(
+      () =>
+        new Promise((resolve, reject) => {
+          userRateLimiter(req, res, (err) => (err ? reject(err) : resolve()));
+        })
+    )
     .then(() => next())
     .catch((err) => next(err));
 };
