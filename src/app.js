@@ -11,6 +11,7 @@ const morgan = require('./config/morgan');
 const { jwtStrategy } = require('./config/passport');
 const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
+const { registerGraphQL } = require('./graphql');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 
@@ -53,15 +54,30 @@ if (config.env === 'production') {
 // v1 api routes
 app.use('/v1', routes);
 
-// send back a 404 error for any unknown api request
-app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
-});
+let didRegisterFinalMiddleware = false;
 
-// convert error to ApiError, if needed
-app.use(errorConverter);
+/**
+ * Mount GraphQL and the global error pipeline. Idempotent; required before handling requests in tests.
+ */
+const ensureAppReady = async () => {
+  if (didRegisterFinalMiddleware) {
+    return;
+  }
+  await registerGraphQL(app);
 
-// handle error
-app.use(errorHandler);
+  // send back a 404 error for any unknown api request
+  app.use((req, res, next) => {
+    next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  });
+
+  // convert error to ApiError, if needed
+  app.use(errorConverter);
+
+  // handle error
+  app.use(errorHandler);
+
+  didRegisterFinalMiddleware = true;
+};
 
 module.exports = app;
+module.exports.ensureAppReady = ensureAppReady;
