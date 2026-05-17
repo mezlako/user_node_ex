@@ -52,8 +52,10 @@ cp .env.example .env
 
 - [Features](#features)
 - [Commands](#commands)
+- [Deployment](#deployment)
 - [Environment Variables](#environment-variables)
 - [Project Structure](#project-structure)
+- [WebSockets](#websockets)
 - [API Documentation](#api-documentation)
 - [Error Handling](#error-handling)
 - [Validation](#validation)
@@ -81,6 +83,7 @@ cp .env.example .env
 - **CORS**: Cross-Origin Resource-Sharing enabled using [cors](https://github.com/expressjs/cors)
 - **Compression**: gzip compression with [compression](https://github.com/expressjs/compression)
 - **CI**: continuous integration with [Travis CI](https://travis-ci.org)
+- **WebSocket support**: real-time communication using [Socket.io](https://socket.io)
 - **Docker support**
 - **Code coverage**: using [coveralls](https://coveralls.io)
 - **Code quality**: with [Codacy](https://www.codacy.com)
@@ -144,6 +147,69 @@ yarn prettier
 yarn prettier:fix
 ```
 
+## Deployment
+
+### Using Docker (Recommended)
+
+Make sure [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) are installed.
+
+**Production:**
+
+```bash
+# Build and start containers in production mode
+yarn docker:prod
+```
+
+**Development:**
+
+```bash
+# Build and start containers in development mode (with hot-reload)
+yarn docker:dev
+```
+
+The app will be available at `http://localhost:3000`.
+
+To stop the containers:
+
+```bash
+docker-compose down
+```
+
+### Without Docker (Native)
+
+**1. Install dependencies:**
+
+```bash
+yarn install
+```
+
+**2. Set environment variables:**
+
+```bash
+cp .env.example .env
+# Edit .env with your production values (MONGODB_URL, JWT_SECRET, etc.)
+```
+
+**3. Start with PM2:**
+
+```bash
+yarn start
+```
+
+PM2 will keep the process alive, restart it on crash, and store logs. To monitor the process:
+
+```bash
+npx pm2 list
+npx pm2 logs
+```
+
+To stop or restart:
+
+```bash
+npx pm2 stop ecosystem.config.json
+npx pm2 restart ecosystem.config.json
+```
+
 ## Environment Variables
 
 The environment variables can be found and modified in the `.env` file. They come with these default values:
@@ -187,6 +253,36 @@ src\
  |--validations\    # Request data validation schemas
  |--app.js          # Express app
  |--index.js        # App entry point
+```
+
+## WebSockets
+
+The app includes [Socket.io](https://socket.io) for real-time bidirectional communication. The HTTP server is created in `src/index.js` and Socket.io is initialized via `src/config/socket.js`.
+
+To add custom socket event handlers, edit `src/config/socket.js`:
+
+```javascript
+const initSocket = (server) => {
+  const io = socketio(server, { cors: { origin: '*' } });
+
+  io.on('connection', (socket) => {
+    // Handle custom events
+    socket.on('myEvent', (data) => {
+      io.emit('myEvent', data); // broadcast to all clients
+    });
+  });
+
+  return io;
+};
+```
+
+On the client side, connect using the [Socket.io client](https://socket.io/docs/v4/client-installation/):
+
+```javascript
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
+socket.emit('myEvent', { message: 'Hello!' });
 ```
 
 ## API Documentation
