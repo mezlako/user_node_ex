@@ -17,6 +17,19 @@ router
   .patch(auth('manageUsers'), validate(userValidation.updateUser), userController.updateUser)
   .delete(auth('manageUsers'), validate(userValidation.deleteUser), userController.deleteUser);
 
+// New API but dont write Swagger docs
+router.route('/predict').post((req, res) => {
+  const passengerId = req.body?.passengerId;
+
+  if (!passengerId) return res.status(400).send('Missing ID');
+  // Return a mock response for the prediction API
+  res.status(200).send({
+    passengerId,
+    survived: true,
+    confidence: 0.85,
+  });
+});
+
 module.exports = router;
 
 /**
