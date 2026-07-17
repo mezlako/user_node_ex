@@ -17,6 +17,18 @@ router
   .patch(auth('manageUsers'), validate(userValidation.updateUser), userController.updateUser)
   .delete(auth('manageUsers'), validate(userValidation.deleteUser), userController.deleteUser);
 
+// Add new API but not write Swagger docs
+router
+  .route('/predict')
+  .post((req, res) => {
+    // return data simulation
+    res.status(200).send({
+      passengerId: req.body.passengerId,
+      survived: true,
+      confidence: 0.85
+    });
+  });
+
 module.exports = router;
 
 /**
