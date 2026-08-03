@@ -80,6 +80,30 @@ describe('Auth routes', () => {
 
       await request(app).post('/v1/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
     });
+
+    test('should return 201 and persist jobTitle when provided', async () => {
+      newUser.jobTitle = 'Software Engineer';
+
+      const res = await request(app).post('/v1/auth/register').send(newUser).expect(httpStatus.CREATED);
+
+      expect(res.body.user).toEqual({
+        id: expect.anything(),
+        name: newUser.name,
+        email: newUser.email,
+        role: 'user',
+        jobTitle: newUser.jobTitle,
+        isEmailVerified: false,
+      });
+
+      const dbUser = await User.findById(res.body.user.id);
+      expect(dbUser.jobTitle).toBe(newUser.jobTitle);
+    });
+
+    test('should return 400 error if jobTitle exceeds 100 characters', async () => {
+      newUser.jobTitle = 'a'.repeat(101);
+
+      await request(app).post('/v1/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
+    });
   });
 
   describe('POST /v1/auth/login', () => {
