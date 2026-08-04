@@ -7,6 +7,7 @@ const createUser = {
     password: Joi.string().required().custom(password),
     name: Joi.string().required(),
     role: Joi.string().required().valid('user', 'admin'),
+    jobProfile: Joi.string().max(50), // create-nodejs-express-app
   }),
 };
 
@@ -35,6 +36,7 @@ const updateUser = {
       email: Joi.string().email(),
       password: Joi.string().custom(password),
       name: Joi.string(),
+      jobProfile: Joi.string().max(50), // create-nodejs-express-app
     })
     .min(1),
 };

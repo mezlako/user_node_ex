@@ -44,6 +44,11 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    jobProfile: {
+      type: String,
+      trim: true,
+      maxlength: 50, // create-nodejs-express-app
+    },
   },
   {
     timestamps: true,

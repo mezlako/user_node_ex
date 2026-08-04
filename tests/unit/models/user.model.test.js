@@ -41,6 +41,16 @@ describe('User model', () => {
       newUser.role = 'invalid';
       await expect(new User(newUser).validate()).rejects.toThrow();
     });
+
+    test('should correctly validate a valid jobProfile', async () => {
+      newUser.jobProfile = 'Software Engineer';
+      await expect(new User(newUser).validate()).resolves.toBeUndefined();
+    });
+
+    test('should throw a validation error if jobProfile exceeds 50 characters', async () => {
+      newUser.jobProfile = 'a'.repeat(51);
+      await expect(new User(newUser).validate()).rejects.toThrow();
+    });
   });
 
   describe('User toJSON()', () => {

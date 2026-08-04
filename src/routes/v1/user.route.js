@@ -61,11 +61,15 @@ module.exports = router;
  *               role:
  *                  type: string
  *                  enum: [user, admin]
+ *               jobProfile:
+ *                  type: string
+ *                  maxLength: 50
  *             example:
  *               name: fake name
  *               email: fake@example.com
  *               password: password1
  *               role: user
+ *               jobProfile: Software Engineer
  *     responses:
  *       "201":
  *         description: Created
@@ -207,10 +211,14 @@ module.exports = router;
  *                 format: password
  *                 minLength: 8
  *                 description: At least one number and one letter
+ *               jobProfile:
+ *                 type: string
+ *                 maxLength: 50
  *             example:
  *               name: fake name
  *               email: fake@example.com
  *               password: password1
+ *               jobProfile: Software Engineer
  *     responses:
  *       "200":
  *         description: OK
