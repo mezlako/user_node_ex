@@ -99,8 +99,8 @@ describe('Auth routes', () => {
       expect(dbUser.jobTitle).toBe(newUser.jobTitle);
     });
 
-    test('should return 400 error if jobTitle exceeds 100 characters', async () => {
-      newUser.jobTitle = 'a'.repeat(101);
+    test('should return 400 error if jobTitle exceeds 40 characters', async () => {
+      newUser.jobTitle = 'a'.repeat(41);
 
       await request(app).post('/v1/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
     });

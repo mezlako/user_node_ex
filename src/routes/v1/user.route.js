@@ -51,7 +51,7 @@ module.exports = router;
  *                 type: string
  *               jobTitle:
  *                 type: string
- *                 maxLength: 100
+ *                 maxLength: 40
  *               email:
  *                 type: string
  *                 format: email
@@ -204,7 +204,7 @@ module.exports = router;
  *                 type: string
  *               jobTitle:
  *                 type: string
- *                 maxLength: 100
+ *                 maxLength: 40
  *               email:
  *                 type: string
  *                 format: email

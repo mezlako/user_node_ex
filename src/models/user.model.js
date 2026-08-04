@@ -14,7 +14,7 @@ const userSchema = mongoose.Schema(
     jobTitle: {
       type: String,
       trim: true,
-      maxlength: 100,
+      maxlength: 40,
     },
     email: {
       type: String,

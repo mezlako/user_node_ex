@@ -12,7 +12,7 @@ components:
           type: string
         jobTitle:
           type: string
-          maxLength: 100
+          maxLength: 40
         role:
           type: string
           enum: [user, admin]

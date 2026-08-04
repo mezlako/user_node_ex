@@ -47,8 +47,8 @@ describe('User model', () => {
       await expect(new User(newUser).validate()).resolves.toBeUndefined();
     });
 
-    test('should throw a validation error if jobTitle exceeds 100 characters', async () => {
-      newUser.jobTitle = 'a'.repeat(101);
+    test('should throw a validation error if jobTitle exceeds 40 characters', async () => {
+      newUser.jobTitle = 'a'.repeat(41);
       await expect(new User(newUser).validate()).rejects.toThrow();
     });
   });

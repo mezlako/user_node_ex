@@ -162,9 +162,9 @@ describe('User routes', () => {
       expect(dbUser.jobTitle).toBe(newUser.jobTitle);
     });
 
-    test('should return 400 error if jobTitle exceeds 100 characters', async () => {
+    test('should return 400 error if jobTitle exceeds 40 characters', async () => {
       await insertUsers([admin]);
-      newUser.jobTitle = 'a'.repeat(101);
+      newUser.jobTitle = 'a'.repeat(41);
 
       await request(app)
         .post('/v1/users')
@@ -672,9 +672,9 @@ describe('User routes', () => {
       expect(dbUser.jobTitle).toBe(updateBody.jobTitle);
     });
 
-    test('should return 400 error if jobTitle exceeds 100 characters', async () => {
+    test('should return 400 error if jobTitle exceeds 40 characters', async () => {
       await insertUsers([userOne]);
-      const updateBody = { jobTitle: 'a'.repeat(101) };
+      const updateBody = { jobTitle: 'a'.repeat(41) };
 
       await request(app)
         .patch(`/v1/users/${userOne._id}`)
