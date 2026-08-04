@@ -11,6 +11,11 @@ const userSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    jobTitle: {
+      type: String,
+      trim: true,
+      maxlength: 40,
+    },
     email: {
       type: String,
       required: true,
