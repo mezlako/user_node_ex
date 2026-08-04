@@ -138,6 +138,40 @@ describe('User routes', () => {
         .send(newUser)
         .expect(httpStatus.BAD_REQUEST);
     });
+
+    test('should return 201 and include jobTitle when provided', async () => {
+      await insertUsers([admin]);
+      newUser.jobTitle = 'Software Engineer';
+
+      const res = await request(app)
+        .post('/v1/users')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send(newUser)
+        .expect(httpStatus.CREATED);
+
+      expect(res.body).toEqual({
+        id: expect.anything(),
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        jobTitle: newUser.jobTitle,
+        isEmailVerified: false,
+      });
+
+      const dbUser = await User.findById(res.body.id);
+      expect(dbUser.jobTitle).toBe(newUser.jobTitle);
+    });
+
+    test('should return 400 error if jobTitle exceeds 40 characters', async () => {
+      await insertUsers([admin]);
+      newUser.jobTitle = 'a'.repeat(41);
+
+      await request(app)
+        .post('/v1/users')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send(newUser)
+        .expect(httpStatus.BAD_REQUEST);
+    });
   });
 
   describe('GET /v1/users', () => {
@@ -614,6 +648,33 @@ describe('User routes', () => {
         .expect(httpStatus.BAD_REQUEST);
 
       updateBody.password = '11111111';
+
+      await request(app)
+        .patch(`/v1/users/${userOne._id}`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send(updateBody)
+        .expect(httpStatus.BAD_REQUEST);
+    });
+
+    test('should return 200 and update jobTitle', async () => {
+      await insertUsers([userOne]);
+      const updateBody = { jobTitle: 'Software Engineer' };
+
+      const res = await request(app)
+        .patch(`/v1/users/${userOne._id}`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send(updateBody)
+        .expect(httpStatus.OK);
+
+      expect(res.body.jobTitle).toBe(updateBody.jobTitle);
+
+      const dbUser = await User.findById(userOne._id);
+      expect(dbUser.jobTitle).toBe(updateBody.jobTitle);
+    });
+
+    test('should return 400 error if jobTitle exceeds 40 characters', async () => {
+      await insertUsers([userOne]);
+      const updateBody = { jobTitle: 'a'.repeat(41) };
 
       await request(app)
         .patch(`/v1/users/${userOne._id}`)
